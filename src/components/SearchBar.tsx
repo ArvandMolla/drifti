@@ -1,36 +1,67 @@
+import axiosInstance from "../util/axios";
+import { fetchSingleCompany } from "../functions/fetchSingleCompany";
 import { SetStateAction, Dispatch, useState, useEffect } from "react";
+import {
+  singleCompanyInterface,
+  companiesInterface,
+} from "../interfaces/companyInterface";
+import { fetchCompanies } from "../functions/fetchCompanies";
 
 interface searchBarPropsInterface {
-  setInput: Dispatch<SetStateAction<string | number | null>>;
-  input: string | number | null;
+  setCompanies: Dispatch<SetStateAction<companiesInterface | null>>;
+  setSingleCompany: Dispatch<SetStateAction<singleCompanyInterface | null>>;
+  setNoResult: Dispatch<SetStateAction<boolean>>;
 }
 
-function SearchBar() {
-  const [input, setInput] = useState<string | number | null>(null);
+function SearchBar({
+  setCompanies,
+  setSingleCompany,
+  setNoResult,
+}: searchBarPropsInterface) {
+  const [input, setInput] = useState<string | number>("");
 
   useEffect(() => {
     inputHandler();
   }, [input]);
 
-  const inputHandler = () => {
-    if (input && typeof input === "string") {
-      if (input.length > 3) {
-        fetchCompanies();
+  const inputHandler = async () => {
+    if (isNaN(Number(input))) {
+      console.log("not a number");
+      if (typeof input === "string" && input.length > 2) {
+        const companies = await fetchCompanies(input, 0);
+
+        if (companies) {
+          setCompanies(companies);
+          setSingleCompany(null);
+          setNoResult(false);
+        } else {
+          setCompanies(null);
+          setSingleCompany(null);
+          setNoResult(false);
+        }
       }
-    }
-    if (input && typeof input === "number") {
+    } else {
       if (input.toString().length === 9) {
-        fetchSingleCompany();
+        const singleCoFetchResult = await fetchSingleCompany(Number(input));
+        if (singleCoFetchResult) {
+          setSingleCompany(singleCoFetchResult);
+          setCompanies(null);
+          setNoResult(false);
+        } else {
+          setNoResult(true);
+          console.log("no result");
+          setSingleCompany(null);
+          setCompanies(null);
+        }
       }
     }
   };
 
-  const fetchCompanies = async () => {};
-  const fetchSingleCompany = async () => {};
-
   return (
-    <div>
+    <div className="searchbar-container">
       <input
+        placeholder="Org.No or name"
+        value={input ? input : ""}
         className="searchbar"
         onChange={(e) => setInput(e.target.value)}
       ></input>
