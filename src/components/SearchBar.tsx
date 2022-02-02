@@ -26,7 +26,6 @@ function SearchBar({
 
   const inputHandler = async () => {
     if (isNaN(Number(input))) {
-      console.log("not a number");
       if (typeof input === "string" && input.length > 2) {
         const companies = await fetchCompanies(input, 0);
 
@@ -49,7 +48,6 @@ function SearchBar({
           setNoResult(false);
         } else {
           setNoResult(true);
-          console.log("no result");
           setSingleCompany(null);
           setCompanies(null);
         }

@@ -34,6 +34,7 @@ function ResultList({
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
   }, []);
+
   let row = 0;
   const handleKeyPress = ({ keyCode }: { keyCode: number }) => {
     if (keyCode == 40) {
